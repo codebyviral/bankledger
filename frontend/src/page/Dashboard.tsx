@@ -2,13 +2,24 @@ import { Button } from "@/components/ui/button"
 import { fetchBalance, fetchMonthlySpending } from "@/service/balance.service"
 import { fetchRecentTransactions } from "@/service/transaction-service"
 import formatCurrency from "@/utils/format-currency"
-import { PlusIcon, Send, TrendingUp } from "lucide-react"
+import { PlusIcon, Send } from "lucide-react"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
+
+type Transaction = {
+    _id: string;
+    amount: number;
+    fromAccount: string;
+    toAccount: string;
+    note?: string;
+}
 
 const Dashboard = () => {
 
-    const [userDetails, setuserDetails] = useState({
+    const [userDetails, setuserDetails] = useState<{
+        balance: number,
+        transactions: Transaction[]
+        monthlySpent: number
+    }>({
         balance: 0,
         transactions: [],
         monthlySpent: 0,
