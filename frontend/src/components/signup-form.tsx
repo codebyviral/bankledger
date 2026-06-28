@@ -14,32 +14,43 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { registerUser } from "@/service/auth-service"
+import { Loader } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }>({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   })
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   /**
    * Register User
    */
   async function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
     if (user.password !== user.confirmPassword) {
       toast('Both passwords must match!')
     }
     try {
       const response = await registerUser(user.name, user.email, user.confirmPassword);
       if (response.status == 201) toast('Account created!')
-    } catch (error:any) {
+    } catch (error: any) {
       toast(error.response.data.message)
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -64,7 +75,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input value={user.name} onChange={(e) => handleChange(e)} name="name" id="name" type="text" placeholder="John Doe" required />
+              <Input autoFocus value={user.name} onChange={(e) => handleChange(e)} name="name" id="name" type="text" placeholder="John Doe" required />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -98,7 +109,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </Field>
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit">{loading ? (<div className="animate-spin"><Loader /></div>) : 'Create Account'}</Button>
                 <FieldDescription className="px-6 text-center">
                   Already have an account? <Link to="/auth/signin">Sign in</Link>
                 </FieldDescription>

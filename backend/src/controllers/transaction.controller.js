@@ -229,6 +229,13 @@ async function createTransaction(req, res) {
     toAccount,
   );
 
+  await emailService.sendCreditEmail(
+    toUser.email,
+    toUser.name,
+    amount,
+    toAccount,
+  );
+
   return res.status(201).json({
     message: "Transaction completed successfully",
     transaction,

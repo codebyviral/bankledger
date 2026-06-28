@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button"
 import { fetchBalance, fetchMonthlySpending } from "@/service/balance.service"
 import { fetchRecentTransactions } from "@/service/transaction-service"
 import formatCurrency from "@/utils/format-currency"
-import { PlusIcon, Send } from "lucide-react"
+import { BookOpenTextIcon, Send } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 type Transaction = {
     _id: string;
@@ -53,6 +54,9 @@ const Dashboard = () => {
         getTransactions();
         getMonthlySpend();
     }, [])
+
+    const navigate = useNavigate()
+
     return (
         <>
             <div className="m-10">
@@ -61,8 +65,8 @@ const Dashboard = () => {
                         <div className="md:text-2xl uppercase mb-10">current balance</div>
                         <h1 className="md:text-6xl text-4xl dark:text-white">{formatCurrency(userDetails.balance)}</h1>
                         <div className="absolute md:bottom-0 p-2 md:pb-10 mt-7 flex">
-                            <Button className='md:w-30 md:text-lg md:px-20 h-10 capitalize'> <PlusIcon /> Add funds</Button>
-                            <Button variant='outline' className='md:w-30 md:text-lg h-10 ml-10 rounded dark:text-white'> <Send /> Send</Button>
+                            <Button onClick={() => navigate('/account/passbook')} className='md:w-50 md:text-lg md:px-20 h-10 capitalize'> <BookOpenTextIcon /> View passbook</Button>
+                            <Button onClick={() => navigate('/account/fund-transfer')} variant='outline' className='md:w-30 md:text-lg h-10 ml-10 rounded dark:text-white'> <Send /> Send</Button>
                         </div>
                     </div>
                     <div className="md:w-70 w-90 h-auto md:mt-10 absolute md:right-20 border p-5 rounded mt-65">

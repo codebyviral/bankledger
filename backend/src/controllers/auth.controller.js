@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 const emailService = require("../services/email.service");
 const tokenBlacklistModel = require("../models/blacklist.model");
 const accountModel = require("../models/account.model");
+const { v7: uuidv7 } = require("uuid");
+const ledgerModel = require("../models/ledger.model");
+const { default: mongoose } = require("mongoose");
+const transactionModel = require("../models/transaction.model");
 /**
  * - user register controller
  * - POST /api/auth/register
@@ -37,6 +41,57 @@ async function userRegisterController(req, res) {
   const account = await accountModel.create({
     user: user._id,
   });
+
+  const toAccountId = account._id;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const idempotencyKey = uuidv7();
+
+  const transaction = new transactionModel({
+    fromAccount: `6a36587af6b9f6791af2af6b`, // System account ID
+    toAccount: toAccountId,
+    amount: 100000,
+    idempotencyKey,
+    status: "PENDING",
+  });
+
+  const debitLedgerEntry = await ledgerModel.create(
+    [
+      {
+        account: `6a36587af6b9f6791af2af6b`, // System account ID,
+        transaction: transaction._id,
+        amount: 100000,
+        type: "DEBIT",
+      },
+    ],
+    { session },
+  );
+
+  const creditLedgerEntry = await ledgerModel.create(
+    [
+      {
+        account: toAccountId,
+        transaction: transaction._id,
+        amount: 100000,
+        type: "CREDIT",
+      },
+    ],
+    { session },
+  );
+
+  transaction.status = "COMPLETED";
+  await transaction.save({ session });
+  await session.commitTransaction();
+  session.endSession();
+
+  await emailService.sendCreditEmail(
+    user.email,
+    user.name,
+    100000,
+    toAccountId,
+  );
 
   res.status(201).json({
     user: {

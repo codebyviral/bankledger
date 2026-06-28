@@ -50,7 +50,7 @@ export function LoginForm({
       if (response.status == 200) {
         toast('Sign in successful')
         localStorage.setItem('accessToken', response.data.token)
-        navigate("/dashboard")
+        navigate("/account/dashboard")
       }
     } catch (error: any) {
       toast(error.response.data.message)
@@ -73,6 +73,7 @@ export function LoginForm({
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   name='email'
+                  autoFocus
                   value={user.email}
                   onChange={(e) => handleChange(e)}
                   id="email"

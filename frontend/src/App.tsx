@@ -1,8 +1,5 @@
 import { DashboardLayout } from '@/components/component.index'
-import Dashboard from '@/page/Dashboard'
-import Home from '@/page/Home'
-import Login from '@/page/Login'
-import Signup from '@/page/Signup'
+import { Home, Signup, Login, Dashboard, Passbook, FundTransfer } from "@/page/page.index"
 import { Routes, Route } from 'react-router-dom'
 
 const App = () => {
@@ -14,7 +11,9 @@ const App = () => {
         <Route path='/auth/signup' element={<Signup />} />
         <Route path='/auth/signin' element={<Login />} />
         <Route element={<DashboardLayout />}>
-          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/account/dashboard' element={<Dashboard />} />
+          <Route path='/account/passbook' element={<Passbook />} />
+          <Route path='/account/fund-transfer' element={<FundTransfer />} />
         </Route>
       </Routes>
     </div>
