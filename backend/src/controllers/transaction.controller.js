@@ -221,20 +221,20 @@ async function createTransaction(req, res) {
    * 10. Send email notification
    */
 
-  await emailService.sendTransactionEmail(
-    req.user.email,
-    req.user.name,
-    amount,
-    fromAccount,
-    toAccount,
-  );
+  // await emailService.sendTransactionEmail(
+  //   req.user.email,
+  //   req.user.name,
+  //   amount,
+  //   fromAccount,
+  //   toAccount,
+  // );
 
-  await emailService.sendCreditEmail(
-    toUser.email,
-    toUser.name,
-    amount,
-    toAccount,
-  );
+  // await emailService.sendCreditEmail(
+  //   toUser.email,
+  //   toUser.name,
+  //   amount,
+  //   toAccount,
+  // );
 
   return res.status(201).json({
     message: "Transaction completed successfully",

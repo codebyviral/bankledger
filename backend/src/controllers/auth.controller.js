@@ -86,12 +86,12 @@ async function userRegisterController(req, res) {
   await session.commitTransaction();
   session.endSession();
 
-  await emailService.sendCreditEmail(
-    user.email,
-    user.name,
-    100000,
-    toAccountId,
-  );
+  // await emailService.sendCreditEmail(
+  //   user.email,
+  //   user.name,
+  //   100000,
+  //   toAccountId,
+  // );
 
   res.status(201).json({
     user: {
