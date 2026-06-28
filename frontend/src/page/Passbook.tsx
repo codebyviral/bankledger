@@ -2,7 +2,6 @@ import { instance } from "@/api/api-client"
 import { useEffect, useState } from "react"
 import formatCurrency from "@/utils/format-currency"
 import { Button } from "@/components/ui/button"
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,21 +16,16 @@ type LedgerEntry = {
   __v: number
 }
 
-// ── API Service ───────────────────────────────────────────────────────────────
-
-export const fetchLedger = async () => {
-  const response = await instance.get("/api/ledger/")
-  return response
-}
-
-// ── Passbook Component ───────────────────────────────────────────────────────
-
 const Passbook = () => {
   const [ledger, setLedger] = useState<LedgerEntry[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [filter, setFilter] = useState<"ALL" | "CREDIT" | "DEBIT">("ALL")
 
   useEffect(() => {
+    const fetchLedger = async () => {
+      const response = await instance.get("/api/ledger/")
+      return response
+    }
     async function getLedger() {
       try {
         const response = await fetchLedger()
@@ -44,16 +38,6 @@ const Passbook = () => {
     }
     getLedger()
   }, [])
-
-  // ── Derived stats ──────────────────────────────────────────────────────
-
-  const totalCredit = ledger
-    .filter(e => e.type === "CREDIT")
-    .reduce((sum, e) => sum + e.amount, 0)
-
-  const totalDebit = ledger
-    .filter(e => e.type === "DEBIT")
-    .reduce((sum, e) => sum + e.amount, 0)
 
   const filtered = filter === "ALL" ? ledger : ledger.filter(e => e.type === filter)
 
