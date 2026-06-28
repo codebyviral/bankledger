@@ -18,16 +18,19 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { loginUser } from "@/service/auth-service"
 import { toast } from "sonner"
+import { Loader } from "lucide-react"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
 
+  const navigate = useNavigate()
   const [user, setUser] = useState({
     email: '',
     password: ''
   })
+  const [loading, setLoading] = useState<boolean>(false)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
@@ -38,13 +41,13 @@ export function LoginForm({
   }
 
 
-  const navigate = useNavigate()
 
   /**
    * Login user
-   */
+  */
   async function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true)
     try {
       const response = await loginUser(user.email, user.password);
       if (response.status == 200) {
@@ -54,6 +57,8 @@ export function LoginForm({
       }
     } catch (error: any) {
       toast(error.response.data.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -61,9 +66,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Sign In to your account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your email below to login your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -95,7 +100,7 @@ export function LoginForm({
                 <Input onChange={(e) => handleChange(e)} value={user.password} name="password" id="password" type="password" required />
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit">{loading ? <div className="animate-spin"><Loader /></div> : 'Sign In'}</Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <Link to='/auth/signup'>Sign up</Link>
                 </FieldDescription>
