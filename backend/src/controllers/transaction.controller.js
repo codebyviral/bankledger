@@ -228,6 +228,7 @@ async function createTransaction(req, res) {
   });
 
   try {
+    console.log("Sending email notification for transaction...");
     await emailService.sendTransactionEmail(
       req.user.email,
       req.user.name,

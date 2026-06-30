@@ -162,6 +162,7 @@ async function loginController(req, res) {
   });
 
   try {
+    console.log("Sending email notification for login...");
     const ip = req.ip === "::1" ? "8.8.8.8" : req.ip;
 
     const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
