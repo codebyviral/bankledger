@@ -161,17 +161,21 @@ async function loginController(req, res) {
     token,
   });
 
-  const ip = req.ip === "::1" ? "8.8.8.8" : req.ip;
+  try {
+    const ip = req.ip === "::1" ? "8.8.8.8" : req.ip;
 
-  const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
-  const location = `${data.city}, ${data.regionName}, ${data.country}`;
+    const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
+    const location = `${data.city}, ${data.regionName}, ${data.country}`;
 
-  await emailService.sendLoginAlertEmail(
-    user.email,
-    user.name,
-    req.ip,
-    location,
-  );
+    await emailService.sendLoginAlertEmail(
+      user.email,
+      user.name,
+      req.ip,
+      location,
+    );
+  } catch (error) {
+    console.error("Error sending email notification:", error);
+  }
 }
 
 /**

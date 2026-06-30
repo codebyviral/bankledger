@@ -227,20 +227,24 @@ async function createTransaction(req, res) {
     status: "success",
   });
 
-  await emailService.sendTransactionEmail(
-    req.user.email,
-    req.user.name,
-    amount,
-    fromAccount,
-    toAccount,
-  );
+  try {
+    await emailService.sendTransactionEmail(
+      req.user.email,
+      req.user.name,
+      amount,
+      fromAccount,
+      toAccount,
+    );
 
-  await emailService.sendCreditEmail(
-    toUser.email,
-    toUser.name,
-    amount,
-    toAccount,
-  );
+    await emailService.sendCreditEmail(
+      toUser.email,
+      toUser.name,
+      amount,
+      toAccount,
+    );
+  } catch (error) {
+    console.error("Error sending email notification:", error);
+  }
 }
 
 async function createInitialFundsTransaction(req, res) {
