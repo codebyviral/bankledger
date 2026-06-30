@@ -407,9 +407,42 @@ async function sendCreditEmail(userEmail, name, amount, toAccount) {
   await sendEmail(userEmail, subject, text, html);
 }
 
+async function sendLoginAlertEmail(userEmail, name, ipAddress, location) {
+  const subject = "Login Alert from Banking Ledger";
+
+  const text = `Hello ${name},\n\nWe noticed a login to your Banking Ledger account from IP address ${ipAddress} located in ${location}.\n\nIf this was you, no further action is needed. If you did not log in, please secure your account immediately.\n\nBest regards,\nThe Banking Ledger Team`;
+
+  const content = `
+    ${headingBlock("Login Alert", "New Login Detected", "#2563eb")}
+    ${greeting(name)}
+    ${bodyText("We detected a login to your account. Please review the details below:")}
+    ${infoTable(
+      infoRow("IP Address", ipAddress) +
+        infoRow("Location", location) +
+        infoRow(
+          "Date & Time",
+          new Date().toLocaleString("en-IN", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }),
+        ) +
+        infoRow(
+          "Status",
+          statusBadge("Successful Login", "#2563eb", "#eff6ff"),
+        ),
+    )}
+    ${bodyText("If this was you, no further action is needed. If you did not log in, please secure your account immediately by changing your password and contacting support.")}
+    ${signOff()}
+  `;
+
+  const html = emailWrapper(content, "#2563eb");
+  await sendEmail(userEmail, subject, text, html);
+}
+
 module.exports = {
   sendRegisterEmail,
   sendTransactionEmail,
   sendTransactionFailureEmail,
   sendCreditEmail,
+  sendLoginAlertEmail,
 };

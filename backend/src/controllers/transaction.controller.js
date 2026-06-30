@@ -21,7 +21,7 @@ const mongoose = require("mongoose");
  */
 
 async function createTransaction(req, res) {
-  const { toEmail, amount, idempotencyKey , note } = req.body;
+  const { toEmail, amount, idempotencyKey, note } = req.body;
 
   const userId = req.user._id;
 
@@ -221,26 +221,26 @@ async function createTransaction(req, res) {
    * 10. Send email notification
    */
 
-  // await emailService.sendTransactionEmail(
-  //   req.user.email,
-  //   req.user.name,
-  //   amount,
-  //   fromAccount,
-  //   toAccount,
-  // );
-
-  // await emailService.sendCreditEmail(
-  //   toUser.email,
-  //   toUser.name,
-  //   amount,
-  //   toAccount,
-  // );
-
-  return res.status(201).json({
+  res.status(201).json({
     message: "Transaction completed successfully",
     transaction,
     status: "success",
   });
+
+  await emailService.sendTransactionEmail(
+    req.user.email,
+    req.user.name,
+    amount,
+    fromAccount,
+    toAccount,
+  );
+
+  await emailService.sendCreditEmail(
+    toUser.email,
+    toUser.name,
+    amount,
+    toAccount,
+  );
 }
 
 async function createInitialFundsTransaction(req, res) {
