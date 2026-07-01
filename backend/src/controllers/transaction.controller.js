@@ -3,6 +3,8 @@ const ledgerModel = require("../models/ledger.model");
 const accountModel = require("../models/account.model");
 const userModel = require("../models/user.model");
 const mongoose = require("mongoose");
+const { buildTransactionEmail } = require("../emails/email.templates");
+const emailService = require("../helpers/emailService");
 /**
  * - Create a new transaction
  * THE 10-STEP TRANSFER FLOW:
@@ -236,12 +238,31 @@ async function createTransaction(req, res) {
     //   toAccount,
     // );
 
+    // name, amount, fromAccount, toAccount
+    const { subject, html } = buildTransactionEmail({
+      name: req.user.name,
+      amount,
+      fromAccount,
+      toAccount,
+    });
+
+    await emailService.sendEmail(req.user.email, subject, html);
+
     // await emailService.sendCreditEmail(
     //   toUser.email,
     //   toUser.name,
     //   amount,
     //   toAccount,
     // );
+
+    const { subject: subject2, html: html2 } = buildTransactionEmail({
+      name: req.user.name,
+      amount,
+      fromAccount,
+      toAccount,
+    });
+
+    await emailService.sendEmail(toUser.email, subject, html);
   } catch (error) {
     console.error("Error sending email notification:", error);
   }

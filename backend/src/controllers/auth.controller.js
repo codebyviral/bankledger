@@ -166,7 +166,6 @@ async function loginController(req, res) {
   });
 
   try {
-    console.log("Sending email notification for login...");
     const ip = req.ip === "::1" ? "8.8.8.8" : req.ip;
 
     const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
@@ -178,6 +177,7 @@ async function loginController(req, res) {
       location,
       ipAddress: ip,
     });
+    
     await emailService.sendEmail(user.email, subject, html);
   } catch (error) {
     console.error("Error sending email notification:", error);
