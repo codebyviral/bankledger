@@ -69,7 +69,7 @@ const Dashboard = () => {
                             <Button onClick={() => navigate('/account/fund-transfer')} variant='outline' className='md:w-30 md:text-lg h-10 ml-10 rounded dark:text-white'> <Send /> Send</Button>
                         </div>
                     </div>
-                    <div className="md:w-70 w-90 h-auto md:mt-10 absolute md:right-20 border p-5 rounded mt-65">
+                    <div className="md:w-70 w-70 h-auto md:mt-10 absolute md:right-20 border p-5 rounded mt-65">
                         <div className="text-2xl uppercase mb-10">monthly spending</div>
                         <h1 className="text-3xl dark:text-white">{formatCurrency(userDetails.monthlySpent)}</h1>
                         <div className="flex mt-5 text-[#d97757]">
@@ -82,7 +82,7 @@ const Dashboard = () => {
                             <h1 className="md:text-xl uppercase">recent transactions</h1>
                             <div className="absolute right-0 cursor-pointer">View all</div>
                         </div>
-                        <hr className="mt-2 md:w-300 w-90" />
+                        <hr className="mt-2 md:w-280 w-90" />
                         <div className="flex flex-col gap-15 mt-10">
                             {
                                 userDetails.transactions.map((item, index) => {
