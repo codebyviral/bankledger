@@ -1,6 +1,5 @@
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
-const emailService = require("../services/email.service");
 const tokenBlacklistModel = require("../models/blacklist.model");
 const accountModel = require("../models/account.model");
 const { v7: uuidv7 } = require("uuid");
@@ -8,6 +7,11 @@ const ledgerModel = require("../models/ledger.model");
 const { default: mongoose } = require("mongoose");
 const transactionModel = require("../models/transaction.model");
 const axios = require("axios");
+const emailService = require("../helpers/emailService");
+const {
+  buildLoginDetectedEmail,
+  buildTransactionEmail,
+} = require("../emails/email.templates");
 
 /**
  * - user register controller
@@ -88,13 +92,6 @@ async function userRegisterController(req, res) {
   await session.commitTransaction();
   session.endSession();
 
-  await emailService.sendCreditEmail(
-    user.email,
-    user.name,
-    100000,
-    toAccountId,
-  );
-
   res.status(201).json({
     user: {
       _id: user._id,
@@ -103,7 +100,14 @@ async function userRegisterController(req, res) {
     },
   });
 
-  await emailService.sendRegisterEmail(user.email, user.name);
+  const { subject, html } = buildTransactionEmail({
+    name: user.name,
+    amount: 10000,
+    fromAccount: "system-id",
+    toAccount: toAccountId,
+  });
+  
+  await emailService.sendEmail(user.email, subject, html);
 }
 
 /**
@@ -168,12 +172,13 @@ async function loginController(req, res) {
     const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
     const location = `${data.city}, ${data.regionName}, ${data.country}`;
 
-    await emailService.sendLoginAlertEmail(
-      user.email,
-      user.name,
-      req.ip,
+    const { subject, html } = buildLoginDetectedEmail({
+      name: user.name,
+      device: req.get("user-agent"),
       location,
-    );
+      ipAddress: ip,
+    });
+    await emailService.sendEmail(user.email, subject, html);
   } catch (error) {
     console.error("Error sending email notification:", error);
   }

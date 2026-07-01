@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { registerUser } from "@/service/auth-service"
 import { Loader } from "lucide-react"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
@@ -35,6 +35,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const [loading, setLoading] = useState<boolean>(false);
 
+  const navigate = useNavigate();
+
   /**
    * Register User
    */
@@ -47,6 +49,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     try {
       const response = await registerUser(user.name, user.email, user.confirmPassword);
       if (response.status == 201) toast('Account created!')
+      navigate('/auth/signin')
     } catch (error: any) {
       toast(error.response.data.message)
     } finally {

@@ -1,7 +1,6 @@
 const transactionModel = require("../models/transaction.model");
 const ledgerModel = require("../models/ledger.model");
 const accountModel = require("../models/account.model");
-const emailService = require("../services/email.service");
 const userModel = require("../models/user.model");
 const mongoose = require("mongoose");
 /**
@@ -228,21 +227,21 @@ async function createTransaction(req, res) {
   });
 
   try {
-    console.log("Sending email notification for transaction...");
-    await emailService.sendTransactionEmail(
-      req.user.email,
-      req.user.name,
-      amount,
-      fromAccount,
-      toAccount,
-    );
+    // console.log("Sending email notification for transaction...");
+    // await emailService.sendTransactionEmail(
+    //   req.user.email,
+    //   req.user.name,
+    //   amount,
+    //   fromAccount,
+    //   toAccount,
+    // );
 
-    await emailService.sendCreditEmail(
-      toUser.email,
-      toUser.name,
-      amount,
-      toAccount,
-    );
+    // await emailService.sendCreditEmail(
+    //   toUser.email,
+    //   toUser.name,
+    //   amount,
+    //   toAccount,
+    // );
   } catch (error) {
     console.error("Error sending email notification:", error);
   }
