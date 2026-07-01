@@ -344,20 +344,21 @@ function buildWelcomeEmail({ name, email }) {
 }
 
 /**
- * buildTransactionEmail({ name, amount, fromAccount, toAccount })
+ * buildDebitEmail({ name, amount, fromAccount, toAccount })
+ * Sent to the SENDER — money has left their account.
  */
-function buildTransactionEmail({ name, amount, fromAccount, toAccount }) {
-  const subject = "Transaction Alert!";
+function buildDebitEmail({ name, amount, fromAccount, toAccount }) {
+  const subject = "Transaction alert for your Bank Ledger account";
   const amountFormatted = formatRupees(amount);
 
-  const text = `Hello ${name},\n\nA transaction of ${amountFormatted} has been made from account ${maskAccount(fromAccount)} to account ${maskAccount(toAccount)}.\n\nBest regards,\nThe Banking Ledger Team`;
+  const text = `Hello ${name},\n\n${amountFormatted} has been debited from your account (${maskAccount(fromAccount)}) and sent to account ${maskAccount(toAccount)}.\n\nBest regards,\nThe Banking Ledger Team`;
 
   const content = `
-    ${headingBlock("Transaction Alert", `${amountFormatted} Transferred`, THEME.accent)}
+    ${headingBlock("Debit Alert", `${amountFormatted} Sent`, THEME.accent)}
     ${greeting(name)}
-    ${bodyText("A fund transfer has been successfully processed on your account. Please review the details below.")}
+    ${bodyText("A fund transfer has been successfully debited from your account. Please review the details below.")}
     ${infoTable(
-      infoRow("Amount", amountFormatted, true) +
+      infoRow("Amount Debited", amountFormatted, true) +
         infoRow("From Account", maskAccount(fromAccount)) +
         infoRow("To Account", maskAccount(toAccount)) +
         infoRow("Date & Time", formatDateTime()) +
@@ -371,6 +372,37 @@ function buildTransactionEmail({ name, amount, fromAccount, toAccount }) {
   `;
 
   return { subject, text, html: emailWrapper(content, THEME.accent) };
+}
+
+/**
+ * buildCreditEmail({ name, amount, fromAccount, toAccount })
+ * Sent to the RECEIVER — money has arrived in their account.
+ */
+function buildCreditEmail({ name, amount, fromAccount, toAccount }) {
+  const subject = "Bank Ledger account — Credit Alert";
+  const amountFormatted = formatRupees(amount);
+
+  const text = `Hello ${name},\n\n${amountFormatted} has been credited to your account (${maskAccount(toAccount)}) from account ${maskAccount(fromAccount)}.\n\nBest regards,\nThe Banking Ledger Team`;
+
+  const content = `
+    ${headingBlock("Credit Alert", `${amountFormatted} Received`, THEME.success)}
+    ${greeting(name)}
+    ${bodyText("Good news — a fund transfer has been successfully credited to your account. Please review the details below.")}
+    ${infoTable(
+      infoRow("Amount Credited", amountFormatted, true) +
+        infoRow("To Account", maskAccount(toAccount)) +
+        infoRow("From Account", maskAccount(fromAccount)) +
+        infoRow("Date & Time", formatDateTime()) +
+        infoRow(
+          "Status",
+          statusBadge("Success", THEME.success, THEME.successBg),
+        ),
+    )}
+    ${bodyText("If you were not expecting this transaction, please contact support to report it.")}
+    ${signOff()}
+  `;
+
+  return { subject, text, html: emailWrapper(content, THEME.success) };
 }
 
 /**
@@ -406,6 +438,7 @@ function buildLoginDetectedEmail({ name, device, location, time, ipAddress }) {
 
 module.exports = {
   buildWelcomeEmail,
-  buildTransactionEmail,
+  buildDebitEmail,
+  buildCreditEmail,
   buildLoginDetectedEmail,
 };

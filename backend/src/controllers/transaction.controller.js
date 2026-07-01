@@ -3,7 +3,7 @@ const ledgerModel = require("../models/ledger.model");
 const accountModel = require("../models/account.model");
 const userModel = require("../models/user.model");
 const mongoose = require("mongoose");
-const { buildTransactionEmail } = require("../emails/email.templates");
+const { buildDebitEmail, buildCreditEmail } = require("../emails/email.templates");
 const emailService = require("../helpers/emailService");
 /**
  * - Create a new transaction
@@ -229,17 +229,7 @@ async function createTransaction(req, res) {
   });
 
   try {
-    // console.log("Sending email notification for transaction...");
-    // await emailService.sendTransactionEmail(
-    //   req.user.email,
-    //   req.user.name,
-    //   amount,
-    //   fromAccount,
-    //   toAccount,
-    // );
-
-    // name, amount, fromAccount, toAccount
-    const { subject, html } = buildTransactionEmail({
+    const { subject, html } = buildDebitEmail({
       name: req.user.name,
       amount,
       fromAccount,
@@ -248,21 +238,14 @@ async function createTransaction(req, res) {
 
     await emailService.sendEmail(req.user.email, subject, html);
 
-    // await emailService.sendCreditEmail(
-    //   toUser.email,
-    //   toUser.name,
-    //   amount,
-    //   toAccount,
-    // );
-
-    const { subject: subject2, html: html2 } = buildTransactionEmail({
+    const { subject: subject2, html: html2 } = buildCreditEmail({
       name: req.user.name,
       amount,
       fromAccount,
       toAccount,
     });
 
-    await emailService.sendEmail(toUser.email, subject, html);
+    await emailService.sendEmail(toUser.email, subject2, html2);
   } catch (error) {
     console.error("Error sending email notification:", error);
   }
